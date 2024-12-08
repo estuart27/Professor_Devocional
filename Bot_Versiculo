@@ -64,17 +64,17 @@ total_versiculos = sum(
     versiculos for livro in livros.values() for versiculos in livro.values()
 )
 
-# Loop infinito para exibir o próximo versículo automaticamente
-def versiculos_diario(indice_atual):
+def versiculos_diario():
+    global indice_atual  # Adicione esta linha para usar o índice global
     if indice_atual < total_versiculos:
         versiculo_atual = obter_versiculo_por_indice(indice_atual)
         print(f"O versículo atual é: {versiculo_atual}")
-        indice_atual += 1
+        indice_atual += 1  # Atualiza o índice global
         return versiculo_atual
-    
     else:
-        print('Parabens vocé terminou o Estudo ')
-        return 'Parabens vocé terminou o Estudo'
+        print('Parabéns você terminou o Estudo')
+        return 'Parabéns você terminou o Estudo'
+
 
 
 def gerar_mensagem_whatsapp(versiculo):
@@ -108,18 +108,21 @@ def gerar_mensagem_whatsapp(versiculo):
     # Retorna a explicação gerada
     return resposta.content.strip()  # Remove espaços em branco no início e no final da resposta
 
-# Teste da função com um exemplo
 
+    
 def enviar_mensagem():
-    versiculo = versiculos_diario(indice_atual)
+    versiculo = versiculos_diario()  # Remova o argumento `indice_atual`
     mensagem = gerar_mensagem_whatsapp(versiculo)
-    bot.send_message(chat_id, mensagem)
+    print(mensagem)
+    print()
+    # bot.send_message(chat_id, mensagem)
     print(f"Mensagem enviada às {datetime.now().strftime('%H:%M:%S')}")
 
 
+
 def agendar_mensagens():
-    schedule.every().day.at("09:00").do(enviar_mensagem)
-    schedule.every().day.at("00:00").do(enviar_mensagem)
+    schedule.every().day.at("16:27").do(enviar_mensagem)
+    schedule.every().day.at("16:29").do(enviar_mensagem)
 
 
     while True:
@@ -133,9 +136,10 @@ def iniciar_bot_e_agendamento():
     agendamento_thread.start()
 
     # Inicia o bot para receber mensagens
-    bot.infinity_polling()
+    # bot.infinity_polling()
 
 # Iniciar o bot e o agendamento juntos
 if __name__ == '__main__':
     iniciar_bot_e_agendamento()
+
 
