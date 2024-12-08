@@ -1,0 +1,141 @@
+import os
+from langchain_groq import ChatGroq
+from langchain.prompts import ChatPromptTemplate
+from datetime import datetime
+import telebot
+import schedule
+import threading
+from time import sleep
+
+
+# API_TOKEN = '7363677491:AAG5PYMSToyDvmiyDGJH1PCBNEefvAwNyoM'
+API_TOKEN = '7352539677:AAFuyYDwKm1jNjBT9KZnvT51jBGawQsmI-Y'
+
+chat_id = '6662355881'  # Substitua pelo ID do chat ou do usuário
+
+bot = telebot.TeleBot(API_TOKEN)
+
+print('INICIANDO .. ')
+
+livros = {
+    "Tiago": {  # Número de versículos por capítulo
+        "1": 27,
+        "2": 26,
+        "3": 18,
+        "4": 17,
+        "5": 20,
+    },
+    "1 Pedro": {
+        "1": 25,
+        "2": 25,
+        "3": 22,
+        "4": 19,
+        "5": 14,
+    },
+    "2 Pedro": {
+        "1": 21,
+        "2": 22,
+        "3": 18,
+    },
+    "1 João": {
+        "1": 10,
+        "2": 29,
+        "3": 24,
+        "4": 21,
+        "5": 21,
+    },
+}
+
+# Função para obter o versículo pelo índice global
+def obter_versiculo_por_indice(indice):
+    contador = 0
+    for livro, capitulos in livros.items():
+        for capitulo, versiculos in capitulos.items():
+            for versiculo in range(1, versiculos + 1):
+                if contador == indice:
+                    return f"{livro} {capitulo}:{versiculo}"
+                contador += 1
+
+# Contador inicial do índice
+indice_atual = 0
+
+# Quantidade total de versículos nos livros selecionados
+total_versiculos = sum(
+    versiculos for livro in livros.values() for versiculos in livro.values()
+)
+
+# Loop infinito para exibir o próximo versículo automaticamente
+def versiculos_diario(indice_atual):
+    if indice_atual < total_versiculos:
+        versiculo_atual = obter_versiculo_por_indice(indice_atual)
+        print(f"O versículo atual é: {versiculo_atual}")
+        indice_atual += 1
+        return versiculo_atual
+    
+    else:
+        print('Parabens vocé terminou o Estudo ')
+        return 'Parabens vocé terminou o Estudo'
+
+
+def gerar_mensagem_whatsapp(versiculo):
+    # Configuração de API e chave
+    api_key = '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'
+    os.environ['GROQ_API_KEY'] = api_key
+
+    # Inicializa o ChatGroq
+    chat = ChatGroq(model='llama-3.1-70b-versatile')
+
+    # Mensagem inicial a ser enviada, agora incluindo referências a teólogos
+    mensagem_base = (
+        f"Por favor, forneça uma explicação detalhada do seguinte versículo bíblico: {versiculo}.\n"
+        "Inclua o contexto histórico, principais interpretações, e sugestões para aplicação prática na vida cotidiana. "
+        "Além disso, mencione as visões de teólogos respeitados sobre este versículo, como Agostinho de Hipona, Tomás de Aquino, Martinho Lutero, João Calvino, Karl Barth, Dietrich Bonhoeffer, N.T. Wright, Jürgen Moltmann."
+    )
+
+    # Template para a IA criar respostas educativas
+    template = ChatPromptTemplate.from_messages([
+        ('system', 'Você é um professor de teologia especializado na explicação de versículos bíblicos.'),
+        ('system', 'Seja claro, objetivo e abrangente. Inclua o contexto histórico e teológico, além de aplicações práticas.'),
+        ('user', '{input}')
+    ])
+
+    # Invoca o chat para gerar a explicação
+    chain = template | chat
+    resposta = chain.invoke({
+        'input': mensagem_base
+    })
+
+    # Retorna a explicação gerada
+    return resposta.content.strip()  # Remove espaços em branco no início e no final da resposta
+
+# Teste da função com um exemplo
+
+def enviar_mensagem():
+    versiculo = versiculos_diario(indice_atual)
+    mensagem = gerar_mensagem_whatsapp(versiculo)
+    bot.send_message(chat_id, mensagem)
+    print(f"Mensagem enviada às {datetime.now().strftime('%H:%M:%S')}")
+
+
+def agendar_mensagens():
+    schedule.every().day.at("09:00").do(enviar_mensagem)
+    schedule.every().day.at("00:00").do(enviar_mensagem)
+
+
+    while True:
+        schedule.run_pending()  # Verifica se há tarefas agendadas para executar
+        sleep(1)  # Aguardar 1 segundo antes de verificar novamente
+
+
+def iniciar_bot_e_agendamento():
+    # Cria uma nova thread para o agendamento
+    agendamento_thread = threading.Thread(target=agendar_mensagens)
+    agendamento_thread.start()
+
+    # Inicia o bot para receber mensagens
+    bot.infinity_polling()
+
+# Iniciar o bot e o agendamento juntos
+if __name__ == '__main__':
+    iniciar_bot_e_agendamento()
+
