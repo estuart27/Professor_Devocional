@@ -113,41 +113,50 @@ def gerar_mensagem_whatsapp(versiculo):
     return resposta.content.strip()  # Remove espaços em branco no início e no final da resposta
 
 
-# Comando /help
+def enviar_mensagem():
+    print("Tentando enviar mensagem agendada...")
+    
+    # Chame a função que obtém o versículo e gera a mensagem
+    versiculo = versiculos_diario()
+    
+    # Verifique se o estudo terminou
+    if "terminou o Estudo" not in versiculo:
+        mensagem = gerar_mensagem_whatsapp(versiculo)
+        
+        # Envia a mensagem ao chat_id
+        bot.send_message(chat_id, mensagem)
+        print('Mensagem enviada:', mensagem)
+    else:
+        print('O estudo terminou, não há mais versículos para enviar.')
+
+# Modifique o handler do bot para chamar a mesma lógica
 @bot.message_handler(commands=['devocional'])
 def send_help(message):
-    versiculo = versiculos_diario()  # Remova o argumento `indice_atual`
-    mensagem = gerar_mensagem_whatsapp(versiculo)
-    bot.reply_to(message,mensagem)
+    enviar_mensagem()  # Chame a nova função para enviar a mensagem
 
 
 
-def enviar_mensagem():
-    try:
-        versiculo = versiculos_diario()
-        mensagem = gerar_mensagem_whatsapp(versiculo)
-        bot.send_message(chat_id, mensagem)
-        print(f"Mensagem enviada com sucesso: {mensagem} às {datetime.now()}")
-    except Exception as e:
-        print(f"Erro ao enviar mensagem: {e}")
+def agendar_mensagens():
+    schedule.every().day.at("08:40").do(enviar_mensagem)
+    schedule.every().day.at("12:55").do(enviar_mensagem)
+    schedule.every().day.at("14:10").do(enviar_mensagem)
+    schedule.every().day.at("21:30").do(enviar_mensagem)
+    schedule.every().day.at("21:32").do(enviar_mensagem)
 
-
-def iniciar_agendador():
-    scheduler = BackgroundScheduler()
-
-    # Agendando as mensagens
-    scheduler.add_job(enviar_mensagem, 'cron', hour=8, minute=40)
-    scheduler.add_job(enviar_mensagem, 'cron', hour=12, minute=25)
-    scheduler.add_job(enviar_mensagem, 'cron', hour=13, minute=40)
-    scheduler.add_job(enviar_mensagem, 'cron', hour=13, minute=50)
-    scheduler.add_job(enviar_mensagem, 'cron', hour=21, minute=32)
-
-    scheduler.start()
-    print("Agendador iniciado.")
+    while True:
+        try:
+            schedule.run_pending()  # Verifica se há tarefas agendadas
+        except Exception as e:
+            print(f"Erro ao executar agendamento: {e}")
+        sleep(1)  # Aguarda 1 segundo antes de verificar novamente
 
 def iniciar_bot_e_agendamento():
-    iniciar_agendador()
-    
+    # Cria uma nova thread para o agendamento
+    agendamento_thread = threading.Thread(target=agendar_mensagens)
+    agendamento_thread.daemon = True  # Permite encerrar com o programa principal
+    agendamento_thread.start()
+
+    # Inicia o bot para receber mensagens
     try:
         bot.infinity_polling()
     except Exception as e:
@@ -156,3 +165,4 @@ def iniciar_bot_e_agendamento():
 # Iniciar o bot e o agendamento juntos
 if __name__ == '__main__':
     iniciar_bot_e_agendamento()
+    enviar_mensagem()
