@@ -121,13 +121,11 @@ def send_help(message):
 
 
 def enviar_mensagem():
-    try:
-        versiculo = versiculos_diario()
-        mensagem = gerar_mensagem_whatsapp(versiculo)
-        bot.send_message(chat_id, mensagem)
-        print(f"Mensagem enviada com sucesso: {mensagem} às {datetime.now()}")
-    except Exception as e:
-        print(f"Erro ao enviar mensagem: {e}")
+    versiculo = versiculos_diario()  # Remova o argumento `indice_atual`
+    mensagem = gerar_mensagem_whatsapp(versiculo)
+    sleep(10)
+    bot.send_message(chat_id, mensagem)
+    print('Foi')
 
 def agendar_mensagens():
     schedule.every().day.at("08:40").do(enviar_mensagem)
