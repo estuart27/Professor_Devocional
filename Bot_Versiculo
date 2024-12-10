@@ -112,11 +112,6 @@ def gerar_mensagem_whatsapp(versiculo):
     # Retorna a explicação gerada
     return resposta.content.strip()  # Remove espaços em branco no início e no final da resposta
 
-# Resposta a mensagens comuns
-@bot.message_handler(func=lambda message: True)
-def echo_all(message):
-    bot.reply_to(message, "Você disse: " + message.text)
-
 
 # Comando /help
 @bot.message_handler(commands=['devocional'])
