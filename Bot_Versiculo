@@ -9,9 +9,7 @@ from time import sleep
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
-
 API_TOKEN = '7363677491:AAG5PYMSToyDvmiyDGJH1PCBNEefvAwNyoM'
-# API_TOKEN = '7352539677:AAFuyYDwKm1jNjBT9KZnvT51jBGawQsmI-Y'
 
 chat_id = '6662355881'  # Substitua pelo ID do chat ou do usuário
 
