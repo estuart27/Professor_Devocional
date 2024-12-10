@@ -115,19 +115,21 @@ def gerar_mensagem_whatsapp(versiculo):
 
 def enviar_mensagem():
     print("Tentando enviar mensagem agendada...")
+    mensagem = 'Nao to ti entendendo'
+    bot.send_message(chat_id, mensagem)
     
-    # Chame a função que obtém o versículo e gera a mensagem
-    versiculo = versiculos_diario()
+    # # Chame a função que obtém o versículo e gera a mensagem
+    # versiculo = versiculos_diario()
     
-    # Verifique se o estudo terminou
-    if "terminou o Estudo" not in versiculo:
-        mensagem = gerar_mensagem_whatsapp(versiculo)
+    # # Verifique se o estudo terminou
+    # if "terminou o Estudo" not in versiculo:
+    #     mensagem = gerar_mensagem_whatsapp(versiculo)
         
-        # Envia a mensagem ao chat_id
-        bot.send_message(chat_id, mensagem)
-        print('Mensagem enviada:', mensagem)
-    else:
-        print('O estudo terminou, não há mais versículos para enviar.')
+    #     # Envia a mensagem ao chat_id
+    #     bot.send_message(chat_id, mensagem)
+    #     print('Mensagem enviada:', mensagem)
+    # else:
+    #     print('O estudo terminou, não há mais versículos para enviar.')
 
 # Modifique o handler do bot para chamar a mesma lógica
 @bot.message_handler(commands=['devocional'])
@@ -137,7 +139,7 @@ def send_help(message):
 
 
 def agendar_mensagens():
-    schedule.every().day.at("14:25").do(enviar_mensagem)
+    schedule.every().day.at("14:29").do(enviar_mensagem)
     schedule.every().day.at("14:28").do(enviar_mensagem)
 
     while True:
