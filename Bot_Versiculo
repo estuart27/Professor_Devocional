@@ -1,3 +1,5 @@
+
+
 import os
 from langchain_groq import ChatGroq
 from langchain.prompts import ChatPromptTemplate
@@ -96,6 +98,8 @@ def gerar_mensagem_whatsapp(versiculo):
     template = ChatPromptTemplate.from_messages([
         ('system', 'Você é um professor de teologia especializado na explicação de versículos bíblicos.'),
         ('system', 'Seja claro, objetivo e abrangente. Inclua o contexto histórico e teológico, além de aplicações práticas.'),
+        ('system', 'A resposta tem que ter no maximo 4096 caracteres'),
+
         ('user', '{input}')
     ])
 
@@ -108,26 +112,35 @@ def gerar_mensagem_whatsapp(versiculo):
     # Retorna a explicação gerada
     return resposta.content.strip()  # Remove espaços em branco no início e no final da resposta
 
+# Resposta a mensagens comuns
+@bot.message_handler(func=lambda message: True)
+def echo_all(message):
+    bot.reply_to(message, "Você disse: " + message.text)
 
-    
+
+# Comando /help
+@bot.message_handler(commands=['devocional'])
+def send_help(message):
+    versiculo = versiculos_diario()  # Remova o argumento `indice_atual`
+    mensagem = gerar_mensagem_whatsapp(versiculo)
+    bot.reply_to(message,mensagem)
+
+
 def enviar_mensagem():
     versiculo = versiculos_diario()  # Remova o argumento `indice_atual`
     mensagem = gerar_mensagem_whatsapp(versiculo)
-    print(mensagem)
-    print()
-    # bot.send_message(chat_id, mensagem)
-    print(f"Mensagem enviada às {datetime.now().strftime('%H:%M:%S')}")
+    bot.send_message(chat_id, mensagem)
 
 
 
 def agendar_mensagens():
-    schedule.every().day.at("16:27").do(enviar_mensagem)
-    schedule.every().day.at("16:29").do(enviar_mensagem)
+    schedule.every().day.at("12:00").do(enviar_mensagem)
+    # schedule.every().day.at(":29").do(enviar_mensagem)
 
 
     while True:
-        schedule.run_pending()  # Verifica se há tarefas agendadas para executar
-        sleep(1)  # Aguardar 1 segundo antes de verificar novamente
+        schedule.run_pending()
+        sleep(1)  
 
 
 def iniciar_bot_e_agendamento():
@@ -136,10 +149,8 @@ def iniciar_bot_e_agendamento():
     agendamento_thread.start()
 
     # Inicia o bot para receber mensagens
-    # bot.infinity_polling()
+    bot.infinity_polling()
 
 # Iniciar o bot e o agendamento juntos
 if __name__ == '__main__':
     iniciar_bot_e_agendamento()
-
-
