@@ -131,13 +131,16 @@ def enviar_mensagem():
 
 
 def agendar_mensagens():
-    schedule.every().day.at("12:18").do(enviar_mensagem)
-    # schedule.every().day.at(":29").do(enviar_mensagem)
+    schedule.every().day.at("08:40").do(enviar_mensagem)
+    schedule.every().day.at("12:40").do(enviar_mensagem)
+    schedule.every().day.at("21:35").do(enviar_mensagem)
+    schedule.every().day.at("21:32").do(enviar_mensagem)
+    schedule.every().day.at("21:30").do(enviar_mensagem)
 
 
     while True:
-        schedule.run_pending()
-        sleep(1)  
+        schedule.run_pending()  # Verifica se há tarefas agendadas para executar
+        sleep(1)  # Aguardar 1 segundo antes de verificar novamente
 
 
 def iniciar_bot_e_agendamento():
