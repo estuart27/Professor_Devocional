@@ -125,31 +125,35 @@ def enviar_mensagem():
         versiculo = versiculos_diario()
         mensagem = gerar_mensagem_whatsapp(versiculo)
         bot.send_message(chat_id, mensagem)
+        print(f"Mensagem enviada com sucesso: {mensagem} às {datetime.now()}")
     except Exception as e:
         print(f"Erro ao enviar mensagem: {e}")
 
-
-
 def agendar_mensagens():
     schedule.every().day.at("08:40").do(enviar_mensagem)
-    schedule.every().day.at("12:25").do(enviar_mensagem)
-    schedule.every().day.at("12:27").do(enviar_mensagem)
-    schedule.every().day.at("21:32").do(enviar_mensagem)
+    schedule.every().day.at("12:55").do(enviar_mensagem)
+    schedule.every().day.at("13:00").do(enviar_mensagem)
     schedule.every().day.at("21:30").do(enviar_mensagem)
-
+    schedule.every().day.at("21:32").do(enviar_mensagem)
 
     while True:
-        schedule.run_pending()  # Verifica se há tarefas agendadas para executar
-        sleep(1)  # Aguardar 1 segundo antes de verificar novamente
-
+        try:
+            schedule.run_pending()  # Verifica se há tarefas agendadas
+        except Exception as e:
+            print(f"Erro ao executar agendamento: {e}")
+        sleep(1)  # Aguarda 1 segundo antes de verificar novamente
 
 def iniciar_bot_e_agendamento():
     # Cria uma nova thread para o agendamento
     agendamento_thread = threading.Thread(target=agendar_mensagens)
+    agendamento_thread.daemon = True  # Permite encerrar com o programa principal
     agendamento_thread.start()
 
     # Inicia o bot para receber mensagens
-    bot.infinity_polling()
+    try:
+        bot.infinity_polling()
+    except Exception as e:
+        print(f"Erro ao iniciar o bot: {e}")
 
 # Iniciar o bot e o agendamento juntos
 if __name__ == '__main__':
