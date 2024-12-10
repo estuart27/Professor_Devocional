@@ -6,6 +6,8 @@ import telebot
 import schedule
 import threading
 from time import sleep
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 
 # API_TOKEN = '7363677491:AAG5PYMSToyDvmiyDGJH1PCBNEefvAwNyoM'
@@ -121,33 +123,31 @@ def send_help(message):
 
 
 def enviar_mensagem():
-    versiculo = versiculos_diario()  # Remova o argumento `indice_atual`
-    mensagem = gerar_mensagem_whatsapp(versiculo)
-    sleep(10)
-    bot.send_message(chat_id, mensagem)
-    print('Foi')
+    try:
+        versiculo = versiculos_diario()
+        mensagem = gerar_mensagem_whatsapp(versiculo)
+        bot.send_message(chat_id, mensagem)
+        print(f"Mensagem enviada com sucesso: {mensagem} às {datetime.now()}")
+    except Exception as e:
+        print(f"Erro ao enviar mensagem: {e}")
 
-def agendar_mensagens():
-    schedule.every().day.at("08:40").do(enviar_mensagem)
-    schedule.every().day.at("12:55").do(enviar_mensagem)
-    schedule.every().day.at("13:22").do(enviar_mensagem)
-    schedule.every().day.at("21:30").do(enviar_mensagem)
-    schedule.every().day.at("13:25").do(enviar_mensagem)
 
-    while True:
-        try:
-            schedule.run_pending()  # Verifica se há tarefas agendadas
-        except Exception as e:
-            print(f"Erro ao executar agendamento: {e}")
-        sleep(1)  # Aguarda 1 segundo antes de verificar novamente
+def iniciar_agendador():
+    scheduler = BackgroundScheduler()
+
+    # Agendando as mensagens
+    scheduler.add_job(enviar_mensagem, 'cron', hour=8, minute=40)
+    scheduler.add_job(enviar_mensagem, 'cron', hour=12, minute=25)
+    scheduler.add_job(enviar_mensagem, 'cron', hour=13, minute=40)
+    scheduler.add_job(enviar_mensagem, 'cron', hour=13, minute=50)
+    scheduler.add_job(enviar_mensagem, 'cron', hour=21, minute=32)
+
+    scheduler.start()
+    print("Agendador iniciado.")
 
 def iniciar_bot_e_agendamento():
-    # Cria uma nova thread para o agendamento
-    agendamento_thread = threading.Thread(target=agendar_mensagens)
-    agendamento_thread.daemon = True  # Permite encerrar com o programa principal
-    agendamento_thread.start()
-
-    # Inicia o bot para receber mensagens
+    iniciar_agendador()
+    
     try:
         bot.infinity_polling()
     except Exception as e:
