@@ -130,9 +130,9 @@ def enviar_mensagem():
 def agendar_mensagens():
     schedule.every().day.at("08:40").do(enviar_mensagem)
     schedule.every().day.at("12:55").do(enviar_mensagem)
-    schedule.every().day.at("13:00").do(enviar_mensagem)
+    schedule.every().day.at("13:22").do(enviar_mensagem)
     schedule.every().day.at("21:30").do(enviar_mensagem)
-    schedule.every().day.at("21:32").do(enviar_mensagem)
+    schedule.every().day.at("13:25").do(enviar_mensagem)
 
     while True:
         try:
