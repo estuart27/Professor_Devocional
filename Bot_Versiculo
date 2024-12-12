@@ -90,7 +90,7 @@ def gerar_mensagem_whatsapp(versiculo):
     mensagem_base = (
         f"Por favor, forneça uma explicação detalhada do seguinte versículo bíblico: {versiculo}.\n"
         "Inclua o contexto histórico, principais interpretações, e sugestões para aplicação prática na vida cotidiana. "
-        "Além disso, mencione as visões de teólogos respeitados sobre este versículo, como Agostinho de Hipona, Tomás de Aquino, Martinho Lutero, João Calvino, Karl Barth, Dietrich Bonhoeffer, N.T. Wright, Jürgen Moltmann."
+        "Além disso, mencione as visões de teólogos respeitados sobre este versículo, como Agostinho de Hipona, Charles Spurgeon, Martinho Lutero, João Calvino, Jacó Armínio, John Wesley, John Owen , Paul Washer"
     )
 
     # Template para a IA criar respostas educativas
@@ -136,7 +136,7 @@ def send_help(message):
 
 
 
-@bot.message_handler(commands=['versiculo'])
+@bot.message_handler(commands=['duvida'])
 def send_sugestao(message):
     bot.send_message(message.chat.id, 'Qual versículo você quer que eu faça o comentário?')
     bot.register_next_step_handler(message, comentario)  # Aguarda a próxima mensagem do usuário
@@ -180,4 +180,5 @@ def iniciar_bot_e_agendamento():
 # Iniciar o bot e o agendamento juntos
 if __name__ == '__main__':
     iniciar_bot_e_agendamento()
+
 
