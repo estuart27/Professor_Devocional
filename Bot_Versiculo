@@ -6,15 +6,13 @@ import telebot
 import schedule
 import threading
 from time import sleep
-from apscheduler.schedulers.background import BackgroundScheduler
 
 
+API_TOKEN = '7363677491:AAG5PYMSToyDvmiyDGJH1PCBNEefvAwNyoM'
+# API_TOKEN = '7352539677:AAFuyYDwKm1jNjBT9KZnvT51jBGawQsmI-Y'
 
-# API_TOKEN = '7363677491:AAG5PYMSToyDvmiyDGJH1PCBNEefvAwNyoM'
-API_TOKEN = '7352539677:AAFuyYDwKm1jNjBT9KZnvT51jBGawQsmI-Y'
 
-
-chat_id = '6662355881'  # Substitua pelo ID do chat ou do usuário
+chat_id = '6662355881'  
 
 bot = telebot.TeleBot(API_TOKEN)
 
@@ -138,11 +136,27 @@ def send_help(message):
 
 
 
+@bot.message_handler(commands=['versiculo'])
+def send_sugestao(message):
+    bot.send_message(message.chat.id, 'Qual versículo você quer que eu faça o comentário?')
+    bot.register_next_step_handler(message, comentario)  # Aguarda a próxima mensagem do usuário
+
+
+def comentario(message):
+    user_id = message.from_user.id
+    duvida = message.text  # Captura o texto da mensagem do usuário
+    
+    # Aqui você deve definir a função 'gerar_mensagem_whatsapp'
+    mensagem = gerar_mensagem_whatsapp(duvida)
+    
+    # Confirmação ao usuário
+    bot.send_message(message.chat.id, mensagem)
+
+
+
 def agendar_mensagens():
-    schedule.every().day.at("16:00").do(enviar_mensagem)
-    schedule.every().day.at("18:00").do(enviar_mensagem)
-    schedule.every().day.at("20:00").do(enviar_mensagem)
-    schedule.every().day.at("22:00").do(enviar_mensagem)
+    schedule.every().day.at("11:00").do(enviar_mensagem)
+
 
     while True:
         try:
