@@ -83,7 +83,7 @@ def gerar_mensagem_whatsapp(versiculo):
     mensagem_base = (
         f"Por favor, forneça uma explicação detalhada do seguinte versículo bíblico: {versiculo}.\n"
         "Inclua o contexto histórico, principais interpretações, e sugestões para aplicação prática na vida cotidiana. "
-        "Além disso, mencione as visões de teólogos respeitados sobre este versículo, como Charles Spurgeon, João Calvino, Jacó Armínio, John Wesley, John Owen"
+        "Além disso, mencione as visões de teólogos respeitados sobre este versículo"
     )
 
     # Template para a IA criar respostas educativas
