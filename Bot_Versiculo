@@ -19,13 +19,6 @@ bot = telebot.TeleBot(API_TOKEN)
 print('INICIANDO .. ')
 
 livros = {
-    "Tiago": {  # Número de versículos por capítulo
-        "1": 27,
-        "2": 26,
-        "3": 18,
-        "4": 17,
-        "5": 20,
-    },
     "1 Pedro": {
         "1": 25,
         "2": 25,
