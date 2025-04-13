@@ -84,7 +84,7 @@ def gerar_mensagem_whatsapp(versiculo):
     os.environ['GROQ_API_KEY'] = api_key
 
     # Inicializa o ChatGroq
-    chat = ChatGroq(model='llama-3.1-70b-versatile')
+    chat = ChatGroq(model='deepseek-r1-distill-llama-70b')
 
     # Mensagem inicial a ser enviada, agora incluindo referências a teólogos
     mensagem_base = (
